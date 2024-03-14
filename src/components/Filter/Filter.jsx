@@ -1,11 +1,20 @@
+import { useDispatch } from "react-redux";
+
+import { changeFilter } from '../../redux/filterSlice';
+
 import css from './Filter.module.scss';
 
-const Filter = ({ onFilter }) => {
+const Filter = () => {
+    const despatch = useDispatch();
+    const filterValue = event => {
+        despatch(changeFilter(event.currentTarget.value));
+    };
+
     return (
         <label className={css['filter-label']}>
             <span>Find contacts by name</span>
             <input
-                onChange={onFilter}
+                onChange={filterValue}
                 type="text"
                 name="filter"
                 className={css['filter-input']} />
