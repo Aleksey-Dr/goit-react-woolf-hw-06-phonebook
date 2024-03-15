@@ -1,15 +1,20 @@
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import { nanoid } from 'nanoid';
 
 import css from './ContactForm.module.scss';
 
 import { addContact } from '../../redux/contactsSlice';
+import { selectContacts } from '../../redux/selectors';
 
 const ContactForm = () => {
     const despatch = useDispatch();
+    const contacts = useSelector(selectContacts);
     const onAddContact = (name, number) => despatch(addContact(name, number));
 
     // ================== STATE
+    const [id, setId] = useState(nanoid());
     const [name, setName] = useState('');
     const [number, setNumber] = useState('');
     // ================== /STATE
@@ -33,12 +38,18 @@ const ContactForm = () => {
     const handleSubmit = evt => {
         evt.preventDefault();
 
-        onAddContact({ name, number });
+        const includesName = contacts?.find(contact =>
+            contact.name.toLowerCase() === name.toLowerCase());
+
+        includesName
+            ? Notify.warning(name + ' is already in contacts')
+            : onAddContact({ name, number, id });
 
         reset();
     };
 
     const reset = () => {
+        setId(nanoid());
         setName('');
         setNumber('');
     };
